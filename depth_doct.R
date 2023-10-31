@@ -5,6 +5,12 @@
 # read in data as vector
 depth_data <- scan(commandArgs(trailingOnly=TRUE))
 
+# collect filename as variable (probably a stupid way of doing it) 
+name <- list.files(pattern=commandArgs(trailingOnly=TRUE))
+
+# modal depth
+depth_mode <- which.max(depth_data) - 1
+
 # user input genome size [edit as appropriate!!!!!!]
 g_size <- 2218192823
 
@@ -31,12 +37,11 @@ tval <- min(which(lv == TRUE))
 depth_95th <- tval - 2
 
 # Print to terminal
+cat("The modal read depth is: ", depth_mode, "\n")
 cat("The integer read number below the 95th percentile of depth is: ", depth_95th, "\n")
 
 # make nice plots
-name <- (commandArgs(trailingOnly=TRUE)[1])
-
-pdf("plots.pdf", width=10, height=5)
+pdf(file=paste(name, ".plots.pdf", sep= ""), width=10, height=5)
 par(mfrow=c(1,2))
 
 # plot depth distribution
@@ -47,6 +52,12 @@ plot(c(0:(length(depth_data) - 1)), depth_data,
 	ylab="frequency"
 )
 abline(v=depth_95th, lty=2)
+
+legend("topright", 
+	legend=c(as.expression(bquote(bold("modal depth:"))), depth_mode, 
+		as.expression(bquote(bold("95th percentile:"))), depth_95th), 
+	pch=NULL, cex=0.8, inset=c(0.02,0.0), bty= "n"
+)
 
 # plot cumulative depth distribution
 plot(c(0:(length(depth_data) - 1)), cum_depth,
